@@ -24,6 +24,7 @@ public class CircularList<T> extends FrameLayout {
     /**
      * To use the CircularList, the client must call this method to supply a ListPresenter for
      * populating data.
+     *
      * @param presenter
      */
     public void setPresenter(ListPresenter<T> presenter) {
@@ -84,8 +85,6 @@ public class CircularList<T> extends FrameLayout {
         mScrollListener = new MiddleItemScrollListener();
         mRecyclerView.setOnScrollListener(mScrollListener);
     }
-
-
 
 
     private static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {

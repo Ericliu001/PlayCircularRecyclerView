@@ -11,11 +11,11 @@ public final class RawData {
 
     private static String[] fristNames =
             {
-             "Eric"
-             ,"Lucy"
-             ,"John"
-             , "Jordan"
-                    ,"Marry"
+             "1. Eric"
+             ,"2. Lucy"
+             ,"3. John"
+             , "4. Jordan"
+                    ,"5. Marry"
             }
             ;
     private static String[] lastNames = {
