@@ -46,10 +46,7 @@ public class MainActivity extends AppCompatActivity {
             dataList = list;
         }
 
-        @Override
-        public void onPostViewCreated() {
 
-        }
 
         @Override
         public CircularList.CustomViewHolder getCustomViewHolder(ViewGroup parent) {
