@@ -61,12 +61,8 @@ public class CircularList<T> extends FrameLayout {
         }
         mListPresenter = presenter;
         mRecyclerView.setAdapter(new MiddleItemAdapter());
-//        mRecyclerView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                mScrollListener.onScrolled(mRecyclerView, 0, 0);
-//            }
-//        });
+        // call invalidate to change the middle item view before the user scrolls
+        mRecyclerView.invalidate();
     }
 
 

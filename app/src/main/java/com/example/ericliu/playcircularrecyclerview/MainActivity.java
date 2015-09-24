@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void setMiddleRow() {
                 title.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
-                title.invalidate();
             }
 
             @Override
