@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,11 +14,11 @@ import com.example.ericliu.playcircularrecyclerview.R;
 /**
  * TODO: document your custom view class.
  */
-public class CircularList extends FrameLayout {
+public class CircularList<T> extends FrameLayout {
 
 
     private RecyclerView mRecyclerView;
-    private ListPresenter mListPresenter;
+    private ListPresenter<T> mListPresenter;
     private MiddleItemScrollListener scrollListener;
 
     public CircularList(Context context) {
@@ -56,7 +55,7 @@ public class CircularList extends FrameLayout {
         mRecyclerView.setOnScrollListener(scrollListener);
     }
 
-    public void setPresenter(ListPresenter presenter) {
+    public void setPresenter(ListPresenter<T> presenter) {
         if (presenter == null) {
             return;
         }
@@ -65,15 +64,11 @@ public class CircularList extends FrameLayout {
     }
 
 
-
-
-
     private static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {
 
         int firstVisibleItem = 0;
         int lastVisibleItem = 0;
         int middleItem = 0;
-
 
 
         @Override
@@ -84,7 +79,7 @@ public class CircularList extends FrameLayout {
 
             firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
             lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-            middleItem = (firstVisibleItem + lastVisibleItem)/2;
+            middleItem = (firstVisibleItem + lastVisibleItem) / 2;
         }
 
 
@@ -106,19 +101,23 @@ public class CircularList extends FrameLayout {
 
         @Override
         public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView;
             CustomViewHolder holder;
-            itemView = LayoutInflater.from(getContext()).inflate(R.layout.circular_list_normal_row, parent, false);
-            holder = mListPresenter.getCustomViewHolder(itemView);
+            if (viewType == ITEM_VIEW_TYPE_MIDDLE_ITEM) {
+                holder = mListPresenter.getMiddleViewHolder(parent);
+            } else {
+                holder = mListPresenter.getCustomViewHolder(parent);
+            }
             return holder;
         }
 
         @Override
         public void onBindViewHolder(CustomViewHolder holder, int position) {
+            if (mListPresenter.getListLength() == 0) {
+                return;
+            }
             int realPosition = position % mListPresenter.getListLength();
             holder.setItemData(mListPresenter.getItemAtPosition(realPosition));
         }
-
 
 
         @Override
@@ -128,27 +127,27 @@ public class CircularList extends FrameLayout {
 
 
     }
-        public static abstract class CustomViewHolder<T> extends RecyclerView.ViewHolder  {
-            protected T t;
+
+    public static abstract class CustomViewHolder<T> extends RecyclerView.ViewHolder {
+        protected T t;
 
 
+        public CustomViewHolder(View itemView) {
+            super(itemView);
 
-            public CustomViewHolder(View itemView) {
-                super(itemView);
-
-            }
-
-
-            public void setItemData(T t) {
-                this.t = t;
-                refreshView();
-            }
-
-            protected abstract void refreshView();
         }
 
 
-    public interface ListPresenter {
+        public void setItemData(T t) {
+            this.t = t;
+            refreshView();
+        }
+
+        protected abstract void refreshView();
+    }
+
+
+    public interface ListPresenter<T> {
 
         /**
          * A common interface for all Presenters to implement
@@ -156,9 +155,12 @@ public class CircularList extends FrameLayout {
         void onPostViewCreated();
 
 
-        CustomViewHolder getCustomViewHolder(View itemView);
+        CustomViewHolder getCustomViewHolder(ViewGroup parent);
 
-        Object getItemAtPosition(int position);
+        CustomViewHolder getMiddleViewHolder(ViewGroup parent);
+
+
+        T getItemAtPosition(int position);
 
         int getListLength();
 
