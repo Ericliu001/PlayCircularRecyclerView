@@ -65,7 +65,7 @@ public class CircularList<T> extends FrameLayout {
 
 
     private static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {
-
+        private CustomViewHolder middleRowHolder;
         int firstVisibleItem = 0;
         int lastVisibleItem = 0;
         int middleItem = 0;
@@ -80,6 +80,16 @@ public class CircularList<T> extends FrameLayout {
             firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
             lastVisibleItem = layoutManager.findLastVisibleItemPosition();
             middleItem = (firstVisibleItem + lastVisibleItem) / 2;
+
+            displayMiddleItem(recyclerView);
+        }
+
+        private void displayMiddleItem(RecyclerView recyclerView) {
+            if (middleRowHolder != null) {
+                middleRowHolder.setNormalRow();
+            }
+            middleRowHolder = (CustomViewHolder) recyclerView.findViewHolderForAdapterPosition(middleItem);
+            middleRowHolder.setMiddleRow();
         }
 
 
@@ -102,21 +112,20 @@ public class CircularList<T> extends FrameLayout {
         @Override
         public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             CustomViewHolder holder;
-            if (viewType == ITEM_VIEW_TYPE_MIDDLE_ITEM) {
-                holder = mListPresenter.getMiddleViewHolder(parent);
-            } else {
-                holder = mListPresenter.getCustomViewHolder(parent);
-            }
+            holder = mListPresenter.getCustomViewHolder(parent);
             return holder;
         }
 
         @Override
         public void onBindViewHolder(CustomViewHolder holder, int position) {
             if (mListPresenter.getListLength() == 0) {
+                // never divide a number by 0
                 return;
             }
             int realPosition = position % mListPresenter.getListLength();
             holder.setItemData(mListPresenter.getItemAtPosition(realPosition));
+
+
         }
 
 
@@ -144,6 +153,10 @@ public class CircularList<T> extends FrameLayout {
         }
 
         protected abstract void refreshView();
+
+        protected abstract void setMiddleRow();
+
+        public abstract void setNormalRow();
     }
 
 
@@ -156,8 +169,6 @@ public class CircularList<T> extends FrameLayout {
 
 
         CustomViewHolder getCustomViewHolder(ViewGroup parent);
-
-        CustomViewHolder getMiddleViewHolder(ViewGroup parent);
 
 
         T getItemAtPosition(int position);

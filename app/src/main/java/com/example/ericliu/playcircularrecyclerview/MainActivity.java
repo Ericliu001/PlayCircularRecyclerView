@@ -56,11 +56,6 @@ public class MainActivity extends AppCompatActivity {
             return new PersonViewHolder(itemView);
         }
 
-        @Override
-        public CircularList.CustomViewHolder getMiddleViewHolder(ViewGroup parent) {
-            View itemView = activity.getLayoutInflater().inflate(R.layout.circular_list_normal_row, parent, false);
-            return new PersonViewHolder(itemView);
-        }
 
 
         @Override
@@ -84,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void refreshView() {
                 title.setText(t.getFirstName() + " " + t.getLastName());
+            }
+
+            @Override
+            protected void setMiddleRow() {
+                title.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
+            }
+
+            @Override
+            public void setNormalRow() {
+                title.setTextColor(activity.getResources().getColor(android.R.color.primary_text_light));
             }
 
 
