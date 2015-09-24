@@ -16,6 +16,10 @@ import com.example.ericliu.playcircularrecyclerview.R;
  */
 public class CircularList<T> extends FrameLayout {
 
+    public static final int MAX_VALUE = Integer.MAX_VALUE;
+    public static final int HALF_MAX_VALUE = Integer.MAX_VALUE/2;
+    private static final int A_BIG_NUMBER = 10000;
+
 
     /**
      * To use the CircularList, the client must call this method to supply a ListPresenter for
@@ -29,7 +33,18 @@ public class CircularList<T> extends FrameLayout {
         mListPresenter = presenter;
         mRecyclerView.setAdapter(new MiddleItemAdapter());
         // call invalidate to change the middle item view before the user scrolls
-        mRecyclerView.invalidate();
+//        mRecyclerView.invalidate();
+
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mListPresenter.getListLength() != 0) {
+                    mRecyclerView.scrollToPosition(mListPresenter.getListLength() * A_BIG_NUMBER);
+                    mRecyclerView.invalidate();
+                }
+
+            }
+        });
     }
 
     private RecyclerView mRecyclerView;
@@ -110,6 +125,7 @@ public class CircularList<T> extends FrameLayout {
 
     private class MiddleItemAdapter extends RecyclerView.Adapter<CustomViewHolder> {
 
+
         @Override
         public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             CustomViewHolder holder;
@@ -132,7 +148,7 @@ public class CircularList<T> extends FrameLayout {
 
         @Override
         public int getItemCount() {
-            return Integer.MAX_VALUE;
+            return MAX_VALUE;
         }
 
 
