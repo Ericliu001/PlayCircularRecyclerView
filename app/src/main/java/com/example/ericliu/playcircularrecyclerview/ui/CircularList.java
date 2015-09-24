@@ -5,6 +5,9 @@ import android.content.res.TypedArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.example.ericliu.playcircularrecyclerview.R;
@@ -16,6 +19,8 @@ public class CircularList extends FrameLayout {
 
 
     private RecyclerView mRecyclerView;
+    private ListPresenter mListPresenter;
+    private MiddleItemScrollListener scrollListener;
 
     public CircularList(Context context) {
         super(context);
@@ -39,26 +44,34 @@ public class CircularList extends FrameLayout {
 
         a.recycle();
 
+        initRecyclerView();
 
+    }
 
+    private void initRecyclerView() {
         mRecyclerView = new RecyclerView(getContext());
         this.addView(mRecyclerView);
-    }
-
-    public void setAdapter(RecyclerView.Adapter adapter) {
-        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setOnScrollListener(new MiddleItemScrollListener());
+        scrollListener = new MiddleItemScrollListener();
+        mRecyclerView.setOnScrollListener(scrollListener);
+    }
+
+    public void setPresenter(ListPresenter presenter) {
+        if (presenter == null) {
+            return;
+        }
+        mListPresenter = presenter;
+        mRecyclerView.setAdapter(new MiddleItemAdapter());
     }
 
 
 
 
 
-    public static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {
+    private static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {
 
         int firstVisibleItem = 0;
-        int lasstVisibleItem = 0;
+        int lastVisibleItem = 0;
         int middleItem = 0;
 
 
@@ -70,10 +83,85 @@ public class CircularList extends FrameLayout {
             LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
             firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-            lasstVisibleItem = layoutManager.findLastVisibleItemPosition();
-            middleItem = (firstVisibleItem + lasstVisibleItem)/2;
+            lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            middleItem = (firstVisibleItem + lastVisibleItem)/2;
+        }
+
+
+        public int getMiddleItemPosition() {
+            return middleItem;
+        }
+    }
+
+    private class MiddleItemAdapter extends RecyclerView.Adapter<CustomViewHolder> {
+        private static final int ITEM_VIEW_TYPE_MIDDLE_ITEM = 1;
+        private static final int ITEM_VIEW_TYPE_NORMAL_ITEM = 2;
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == scrollListener.getMiddleItemPosition()
+                    ? ITEM_VIEW_TYPE_MIDDLE_ITEM
+                    : ITEM_VIEW_TYPE_NORMAL_ITEM;
+        }
+
+        @Override
+        public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView;
+            CustomViewHolder holder;
+            itemView = LayoutInflater.from(getContext()).inflate(R.layout.circular_list_normal_row, parent, false);
+            holder = mListPresenter.getCustomViewHolder(itemView);
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(CustomViewHolder holder, int position) {
+            int realPosition = position % mListPresenter.getListLength();
+            holder.setItemData(mListPresenter.getItemAtPosition(realPosition));
+        }
+
+
+
+        @Override
+        public int getItemCount() {
+            return Integer.MAX_VALUE;
         }
 
 
     }
+        public static abstract class CustomViewHolder<T> extends RecyclerView.ViewHolder  {
+            protected T t;
+
+
+
+            public CustomViewHolder(View itemView) {
+                super(itemView);
+
+            }
+
+
+            public void setItemData(T t) {
+                this.t = t;
+                refreshView();
+            }
+
+            protected abstract void refreshView();
+        }
+
+
+    public interface ListPresenter {
+
+        /**
+         * A common interface for all Presenters to implement
+         */
+        void onPostViewCreated();
+
+
+        CustomViewHolder getCustomViewHolder(View itemView);
+
+        Object getItemAtPosition(int position);
+
+        int getListLength();
+
+    }
+
 }
