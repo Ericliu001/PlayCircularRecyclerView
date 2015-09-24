@@ -17,6 +17,21 @@ import com.example.ericliu.playcircularrecyclerview.R;
 public class CircularList<T> extends FrameLayout {
 
 
+    /**
+     * To use the CircularList, the client must call this method to supply a ListPresenter for
+     * populating data.
+     * @param presenter
+     */
+    public void setPresenter(ListPresenter<T> presenter) {
+        if (presenter == null) {
+            return;
+        }
+        mListPresenter = presenter;
+        mRecyclerView.setAdapter(new MiddleItemAdapter());
+        // call invalidate to change the middle item view before the user scrolls
+        mRecyclerView.invalidate();
+    }
+
     private RecyclerView mRecyclerView;
     private ListPresenter<T> mListPresenter;
     private MiddleItemScrollListener mScrollListener;
@@ -55,15 +70,7 @@ public class CircularList<T> extends FrameLayout {
         mRecyclerView.setOnScrollListener(mScrollListener);
     }
 
-    public void setPresenter(ListPresenter<T> presenter) {
-        if (presenter == null) {
-            return;
-        }
-        mListPresenter = presenter;
-        mRecyclerView.setAdapter(new MiddleItemAdapter());
-        // call invalidate to change the middle item view before the user scrolls
-        mRecyclerView.invalidate();
-    }
+
 
 
     private static class MiddleItemScrollListener extends RecyclerView.OnScrollListener {
@@ -159,8 +166,6 @@ public class CircularList<T> extends FrameLayout {
         /**
          * A common interface for all Presenters to implement
          */
-        void onPostViewCreated();
-
 
         CustomViewHolder getCustomViewHolder(ViewGroup parent);
 
