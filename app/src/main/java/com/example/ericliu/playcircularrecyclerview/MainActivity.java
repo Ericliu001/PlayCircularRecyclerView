@@ -3,6 +3,7 @@ package com.example.ericliu.playcircularrecyclerview;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -84,11 +85,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void setMiddleRow() {
                 title.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
+                title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             }
 
             @Override
             public void setNormalRow() {
                 title.setTextColor(activity.getResources().getColor(android.R.color.primary_text_light));
+                title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
             }
 
 
