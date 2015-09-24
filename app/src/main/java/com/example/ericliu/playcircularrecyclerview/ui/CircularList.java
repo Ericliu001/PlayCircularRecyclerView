@@ -17,8 +17,8 @@ import com.example.ericliu.playcircularrecyclerview.R;
 public class CircularList<T> extends FrameLayout {
 
     public static final int MAX_VALUE = Integer.MAX_VALUE;
-    public static final int HALF_MAX_VALUE = Integer.MAX_VALUE/2;
-    private static final int A_BIG_NUMBER = 10000;
+    // scroll the list to a pretty large position index so it can be scroll both up and down.
+    private static final int A_BIG_NUMBER = 1000;
 
 
     /**
